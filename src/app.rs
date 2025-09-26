@@ -40,14 +40,14 @@ pub fn App() -> impl IntoView {
     provide_context(site);
 
     let site_load = OnceResource::new_blocking(async move {
-        let s = Site {
+        leptos::logging::debug_warn!("Loading the site");
+        Site {
             loaded: true,
             title: String::from("Welcome from Leptos site data"),
             style: String::from("example"),
-        };
-        site.set(Some(s.clone()));
-        s
+        }
     });
+    provide_context(site_load);
 
     view! {
         // injects a stylesheet into the document <head>
@@ -92,20 +92,20 @@ pub fn App() -> impl IntoView {
 /// This component does checking on the site style if should apply
 #[component]
 fn Home() -> impl IntoView {
-    let site = expect_context::<RwSignal<Option<Site>>>();
+    let site = expect_context::<OnceResource<Site>>();
 
     view! {
-        {move || {
-            match site.get() {
-                Some(sit) => {
-                    match sit.style.as_str() {
-                        "example" => view! { <HomePage /> }.into_any(),
-                        _ => "Invalid style".into_any(),
-                    }
-                }
-                None => "Site is not yet available".into_any(),
-            }
-        }}
+        <Await
+            // `future` provides the `Future` to be resolved
+            future=async move { site.await }
+            // the data is bound to whatever variable name you provide
+            let:data
+        >
+            {match data.style.as_str() {
+                "example" => view! { <HomePage /> }.into_any(),
+                _ => "Invalid style".into_any(),
+            }}
+        </Await>
     }
 }
 
