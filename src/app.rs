@@ -4,7 +4,10 @@ use leptos_router::{
     components::{Outlet, ParentRoute, Route, Router, Routes},
     path, StaticSegment,
 };
+use leptos_use::use_window_scroll;
+use phosphor_leptos::{Icon, IconWeight, ARROW_FAT_UP};
 use serde::{Deserialize, Serialize};
+use web_sys::{ScrollBehavior, ScrollToOptions};
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     view! {
@@ -119,5 +122,46 @@ fn HomePage() -> impl IntoView {
     view! {
         <h1>"Welcome to Leptos!"</h1>
         <button on:click=on_click>"Click Me: " {count}</button>
+        <h1>"I need a lot of space to scroll"</h1>
+        <h1>"I need a lot of space to scroll"</h1>
+        <h1>"I need a lot of space to scroll"</h1>
+        <h1>"I need a lot of space to scroll"</h1>
+        <h1>"I need a lot of space to scroll"</h1>
+        <h1>"I need a lot of space to scroll"</h1>
+        <div>
+            <ScrollTop />
+        </div>
+        <h1>"I need a lot of space to scroll"</h1>
+        <h1>"I need a lot of space to scroll"</h1>
+        <h1>"I need a lot of space to scroll"</h1>
+        <h1>"I need a lot of space to scroll"</h1>
+        <h1>"I need a lot of space to scroll"</h1>
+        <h1>"I need a lot of space to scroll"</h1>
+    }
+}
+
+fn scroll_to_top() {
+    let window = window();
+    let options = ScrollToOptions::new();
+    options.set_top(0f64);
+    options.set_behavior(ScrollBehavior::Smooth);
+    window.scroll_to_with_scroll_to_options(&options);
+}
+
+/// Scroll to op button and action
+#[component]
+pub(crate) fn ScrollTop() -> impl IntoView {
+    let (_, y) = use_window_scroll();
+    view! {
+        <Show when=move || { y.get() > 1.0 }>
+            <a
+                href="#"
+                on:click=move |_| {
+                    scroll_to_top();
+                }
+            >
+                <Icon icon=ARROW_FAT_UP attr:class="w-4 h-4" weight=IconWeight::Bold />
+            </a>
+        </Show>
     }
 }
